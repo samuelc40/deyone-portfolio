@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Dion Dominic</title>
+    <script>
+        (function() {
+            try {
+                const saved = localStorage.getItem('deyone_portfolio_theme');
+                if (saved) {
+                    const theme = JSON.parse(saved);
+                    const root = document.documentElement;
+                    for (const [key, value] of Object.entries(theme.variables)) {
+                        root.style.setProperty(key, value);
+                    }
+                    root.className = 'theme-' + theme.id;
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            background: var(--color-bg);
+            color: var(--color-text);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar styling */
+        .sidebar {
+            width: 260px;
+            background: var(--color-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 2.5rem 1.5rem;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+            filter: brightness(0.9);
+        }
+
+        .sidebar-brand {
+            font-family: var(--font-body);
+            font-size: 1rem;
+            letter-spacing: 4px;
+            font-weight: 500;
+            color: #fff;
+            text-transform: uppercase;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            list-style: none;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.2rem;
+            color: var(--color-text-muted);
+            text-decoration: none;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 500;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .sidebar-menu li a:hover, 
+        .sidebar-menu li.active a {
+            color: var(--color-accent);
+            background: rgba(176, 141, 92, 0.08);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            border-top: 1px solid #111;
+            padding-top: 1.5rem;
+        }
+
+        .sidebar-footer a {
+            display: block;
+            color: #e57373;
+            text-decoration: none;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 500;
+            padding: 0.8rem 1.2rem;
+            transition: opacity 0.3s ease;
+            cursor: pointer;
+        }
+
+        .sidebar-footer a:hover {
+            opacity: 0.8;
+            background: rgba(229, 115, 115, 0.05);
+        }
+
+        /* Main Content Panel */
+        .main-panel {
+            flex: 1;
+            margin-left: 260px;
+            padding: 3rem 4rem;
+            max-width: calc(100% - 260px);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid #151515;
+            padding-bottom: 1.5rem;
+        }
+
+        .panel-title h2 {
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .panel-title p {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Dashboard components */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .stat-card .label {
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            color: var(--color-accent);
+            text-transform: uppercase;
+        }
+
+        .stat-card .value {
+            font-size: 2.5rem;
+            font-family: var(--font-heading);
+            color: #fff;
+        }
+
+        /* Forms and Buttons */
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            background: #0d0d0d;
+            color: var(--color-accent);
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            font-weight: 500;
+            text-align: left;
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .data-table td {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid #111;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover td {
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.7rem;
+            border-radius: 3px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn.edit:hover {
+            border-color: var(--color-accent);
+            color: var(--color-accent);
+        }
+
+        .action-btn.delete:hover {
+            border-color: #e57373;
+            color: #e57373;
+        }
+
+        /* Message board */
+        .message-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #222;
+            padding-bottom: 0.8rem;
+        }
+
+        .message-meta {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+        }
+
+        .message-meta strong {
+            color: #fff;
+        }
+
+        .message-body {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #ddd;
+            white-space: pre-wrap;
+        }
+
+        /* Modal elements */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--color-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 2.5rem;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            color: #888;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #fff;
+        }
+
+        .modal-title {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            color: #fff;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #222;
+            padding-bottom: 0.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            color: var(--color-accent);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--color-text);
+            padding: 0.8rem 1rem;
+            border-radius: var(--border-radius);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            background: #1c1c1c;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding: 1.5rem;
+            }
+            .sidebar-brand {
+                margin-bottom: 1.5rem;
+            }
+            .sidebar-menu {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+            .sidebar-menu li a {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.7rem;
+            }
+            .main-panel {
+                margin-left: 0;
+                padding: 2rem 1.5rem;
+                max-width: 100%;
+            }
+            .panel-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .modal-content {
+                padding: 1.5rem;
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;"></div>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">Dion Dominic</div>
+        <ul class="sidebar-menu">
+            <li class="active" data-tab="tab-dashboard"><a>Dashboard</a></li>
+            <li data-tab="tab-home"><a>CONTENT</a></li>
+            <li data-tab="tab-blogs"><a>Blog Posts</a></li>
+            <li data-tab="tab-films"><a>Films &amp; Videos</a></li>
+            <li data-tab="tab-stories"><a>Stories/Essays</a></li>
+            <li data-tab="tab-uploaded"><a>Uploaded</a></li>
+            <li data-tab="tab-contacts"><a>Messages</a></li>
+            <li data-tab="tab-themes"><a>Themes</a></li>
+            <li data-tab="tab-settings"><a>Settings</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <a id="logoutBtn">Log Out</a>
+        </div>
+    </aside>
+
+    <!-- Main Dashboard Area -->
+    <main class="main-panel">
+        
+        <!-- DASHBOARD TAB -->
+        <section id="tab-dashboard" class="tab-content active">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <h2>Dashboard Overview</h2>
+                    <p>Welcome back, Admin. System statistics and recent updates.</p>
+                </div>
+            </div>
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <span class="label">Total Stories</span>
+                    <span class="value" id="count-stories">-</span>
+                </div>
+                <div class="stat-card">
+                    <span class="label">Total Films</span>
+                    <span class="value" id="count-films">-</span>
+                </div>
+                <div class="stat-card">
+                    <span class="label">Total Blog Posts</span>
+                    <span class="value" id="count-blogs">-</span>
+                </div>
+                <div class="stat-card">
+                    <span class="label">New Messages</span>
+                    <span class="value" id="count-messages">-</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTENT TAB -->
+        <section id="tab-home" class="tab-content">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <h2>Website Content</h2>
+                    <p>Customize the content of the home page hero and about sections.</p>
+                </div>
+            </div>
+            
+            <div class="home-settings-container" style="max-width: 800px; padding-bottom: 4rem;">
+                <form id="homeSettingsForm">
+                    <!-- HERO SECTION EDITING -->
+                    <div class="settings-group-box" style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 2rem; margin-bottom: 2rem;">
+                        <h3 style="font-family: var(--font-heading); color: var(--color-accent); font-size: 1.2rem; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 1px;">Hero Section Content</h3>
+                        
+                        <div class="form-group">
+                            <label for="home-hero-eyebrow">Hero Eyebrow</label>
+                            <input type="text" id="home-hero-eyebrow" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="home-hero-title">Hero Title</label>
+                            <textarea id="home-hero-title" class="form-control" style="min-height: 80px;" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="home-hero-desc">Hero Description</label>
+                            <textarea id="home-hero-desc" class="form-control" style="min-height: 100px;" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Hero Background Image</label>
+                            <div style="display: flex; gap: 1.5rem; align-items: center; margin-top: 0.5rem;">
+                                <div id="hero-preview-container" style="width: 160px; height: 90px; border: 1px solid var(--border-color); border-radius: var(--border-radius); background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <img id="hero-image-preview" src="" alt="Hero Preview" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                                    <span id="hero-preview-placeholder" style="color: var(--color-text-muted); font-size: 0.75rem;">No Image</span>
+                                </div>
+                                <div style="flex: 1;">
+                                    <input type="text" id="home-hero-image" class="form-control" readonly style="margin-bottom: 0.5rem; background: rgba(255,255,255,0.02); cursor: not-allowed;" placeholder="No image uploaded">
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('home-hero-file').click()">Upload &amp; Crop Photo</button>
+                                        <button type="button" class="btn btn-outline btn-sm" style="border-color: var(--color-error, #d32f2f); color: var(--color-error, #d32f2f);" onclick="clearMediaUpload('home-hero-image', 'hero-image-preview', null, 'hero-preview-placeholder')">Remove</button>
+                                    </div>
+                                    <input type="file" id="home-hero-file" accept="image/*" style="display: none;" onchange="handleImageFileChange(this, 'hero', 1600, 900)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- ABOUT SECTION EDITING -->
+                    <div class="settings-group-box" style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 2rem; margin-bottom: 2rem;">
+                        <h3 style="font-family: var(--font-heading); color: var(--color-accent); font-size: 1.2rem; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 1px;">About The Artist Section</h3>
+                        
+                        <div class="form-group">
+                            <label for="home-about-eyebrow">About Eyebrow</label>
+                            <input type="text" id="home-about-eyebrow" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="home-about-title">Artist Name (Title)</label>
+                            <input type="text" id="home-about-title" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="home-about-desc1">Description Paragraph 1</label>
+                            <textarea id="home-about-desc1" class="form-control" style="min-height: 100px;" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="home-about-desc2">Description Paragraph 2</label>
+                            <textarea id="home-about-desc2" class="form-control" style="min-height: 100px;" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Artist Portrait Image</label>
+                            <div style="display: flex; gap: 1.5rem; align-items: center; margin-top: 0.5rem;">
+                                <div id="about-preview-container" style="width: 100px; height: 125px; border: 1px solid var(--border-color); border-radius: var(--border-radius); background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <img id="about-image-preview" src="" alt="About Preview" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                                    <span id="about-preview-placeholder" style="color: var(--color-text-muted); font-size: 0.75rem;">No Image</span>
+                                </div>
+                                <div style="flex: 1;">
+                                    <input type="text" id="home-about-image" class="form-control" readonly style="margin-bottom: 0.5rem; background: rgba(255,255,255,0.02); cursor: not-allowed;" placeholder="No image uploaded">
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('home-about-file').click()">Upload &amp; Crop Photo</button>
+                                        <button type="button" class="btn btn-outline btn-sm" style="border-color: var(--color-error, #d32f2f); color: var(--color-error, #d32f2f);" onclick="clearMediaUpload('home-about-image', 'about-image-preview', null, 'about-preview-placeholder')">Remove</button>
+                                    </div>
+                                    <input type="file" id="home-about-file" accept="image/*" style="display: none;" onchange="handleImageFileChange(this, 'about', 600, 750)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 2rem; margin-bottom: 2rem; background: var(--card-bg);">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--color-accent); font-family: var(--font-heading);">Stories Section Intro</h3>
+                        <div class="form-group">
+                            <label>Stories Eyebrow</label>
+                            <input type="text" id="stories-intro-eyebrow" class="form-control" placeholder="e.g. PHOTO ESSAYS">
+                        </div>
+                        <div class="form-group">
+                            <label>Stories Title</label>
+                            <input type="text" id="stories-intro-title" class="form-control" placeholder="e.g. Visual Narratives">
+                        </div>
+                        <div class="form-group">
+                            <label>Stories Description</label>
+                            <textarea id="stories-intro-description" class="form-control" placeholder="Enter description..." rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div style="border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 2rem; margin-bottom: 2rem; background: var(--card-bg);">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--color-accent); font-family: var(--font-heading);">Films Section Intro</h3>
+                        <div class="form-group">
+                            <label>Films Eyebrow</label>
+                            <input type="text" id="films-intro-eyebrow" class="form-control" placeholder="e.g. DOCUMENTARY">
+                        </div>
+                        <div class="form-group">
+                            <label>Films Title</label>
+                            <input type="text" id="films-intro-title" class="form-control" placeholder="e.g. Cinematic Explorations">
+                        </div>
+                        <div class="form-group">
+                            <label>Films Description</label>
+                            <textarea id="films-intro-description" class="form-control" placeholder="Enter description..." rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div style="border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 2rem; margin-bottom: 2rem; background: var(--card-bg);">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--color-accent); font-family: var(--font-heading);">Services Section</h3>
+                        <div class="form-group">
+                            <label>Services Eyebrow</label>
+                            <input type="text" id="services-eyebrow" class="form-control" placeholder="e.g. WHAT I DO">
+                        </div>
+                        <div class="form-group">
+                            <label>Services Title</label>
+                            <input type="text" id="services-title" class="form-control" placeholder="e.g. Services & Expertise">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                            <div class="form-group">
+                                <label>Service 1 Title</label>
+                                <input type="text" id="services-1-title" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Service 1 Description</label>
+                                <textarea id="services-1-desc" class="form-control" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Service 2 Title</label>
+                                <input type="text" id="services-2-title" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Service 2 Description</label>
+                                <textarea id="services-2-desc" class="form-control" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Service 3 Title</label>
+                                <input type="text" id="services-3-title" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Service 3 Description</label>
+                                <textarea id="services-3-desc" class="form-control" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 2rem; margin-bottom: 2rem; background: var(--card-bg);">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--color-accent); font-family: var(--font-heading);">Contact & Footer Section</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label>Contact Eyebrow</label>
+                                <input type="text" id="contact-eyebrow" class="form-control" placeholder="e.g. LATEST UPDATES">
+                            </div>
+                            <div class="form-group">
+                                <label>Contact Title</label>
+                                <input type="text" id="contact-title" class="form-control" placeholder="e.g. Let's Tell a Story">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Intro Description</label>
+                            <textarea id="contact-description" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <input type="email" id="contact-email" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="text" id="contact-phone" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Location</label>
+                                <input type="text" id="contact-location" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Syndication/Agent Email</label>
+                                <input type="text" id="contact-syndication" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 1rem;">
+                            <label>Professional Profile Paragraph</label>
+                            <textarea id="contact-profile" class="form-control" rows="3"></textarea>
+                        </div>
+                        <h4 style="margin: 1.5rem 0 1rem; color: #fff;">Social Media Links</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label>Instagram URL</label>
+                                <input type="text" id="contact-social-instagram" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Twitter / X URL</label>
+                                <input type="text" id="contact-social-twitter" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Facebook URL</label>
+                                <input type="text" id="contact-social-facebook" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>LinkedIn URL</label>
+                                <input type="text" id="contact-social-linkedin" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-outline" style="border-color: var(--color-accent); width: 100%; padding: 1rem; font-weight: bold; letter-spacing: 2px;">SAVE CONTENT SETTINGS</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- BLOGS TAB -->
+        <section id="tab-blogs" class="tab-content">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <h2>Blog Posts</h2>
+                    <p>Manage the articles, essays, and notes on the Field Notes page.</p>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="openBlogModal()">Add New Post</button>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 15%">Date</th>
+                        <th style="width: 25%">Title</th>
+                        <th style="width: 20%">Category</th>
+                        <th style="width: 25%">Excerpt</th>
+                        <th style="width: 15%">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="blogs-table-body">
+                    <!-- Dynamic Rows -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- FILMS TAB -->
+        <section id="tab-films" class="tab-content">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <h2>Films &amp; Videos</h2>
+                    <p>Manage documentary films displayed on the Films page.</p>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="openFilmModal()">Add New Film</button>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 15%">Duration</th>
+                        <th style="width: 25%">Title</th>
+                        <th style="width: 20%">Location</th>
+                        <th style="width: 25%">Video URL</th>
+                        <th style="width: 15%">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="films-table-body">
+                    <!-- Dynamic Rows -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- STORIES TAB -->
+        <section id="tab-stories" class="tab-content">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <h2>Stories &amp; Photo Essays</h2>
+                    <p>Manage photo essays displayed on the Stories page.</p>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="openStoryModal()">Add New Story</button>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 25%">Slug/ID</th>
+                        <th style="width: 30%">Title</th>
+                        <th style="width: 20%">Category</th>
+                        <th style="width: 10%">Images</th>
+                        <th style="width: 15%">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="stories-table-body">
+                    <!-- Dynamic Rows -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- UPLOADED TAB -->
+        <section id="tab-uploaded" class="tab-content">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <h2>Uploaded Media</h2>
+                    <p>View all uploaded photos and videos across the website.</p>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 2rem; display: flex; gap: 1rem;">
+                <button class="btn btn-outline" id="btn-uploaded-films-stories" onclick="showUploadedSection('films-stories')" style="border-color: var(--color-accent); color: var(--color-accent);">Films, Stories</button>
+                <button class="btn btn-outline" id="btn-uploaded-background-about" onclick="showUploadedSection('background-about')" style="border-color: #333; color: #fff;">Background &amp; About</button>
+            </div>
+
+            <div id="uploaded-films-stories" class="uploaded-section" style="display: block;">
+                <h3 style="font-family: var(--font-heading); color: var(--color-accent); font-size: 1.2rem; margin-bottom: 1.5rem;">Films &amp; Stories Media</h3>
+                <div id="grid-uploaded-films-stories" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+
+            <div id="uploaded-background-about" class="uploaded-section" style="display: none;">
+                <h3 style="font-family: var(--font-heading); color: var(--color-accent); font-size: 1.2rem; margin-bottom: 1.5rem;">Background &amp; About Media</h3>
+                <div id="grid-uploaded-background-about" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACTS TAB -->
+        <section id="tab-contacts" class="tab-content">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <h2>Contact Messages</h2>
+                    <p>Read inquiry messages and assignments proposals submitted via the website.</p>
+                </div>
+            </div>
+            <div id="contacts-list">
+                <!-- Dynamic cards -->
+            </div>
+        </section>
+
+        <!-- THEMES TAB -->
+        <section id="tab-themes" class="tab-content">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <h2>Website Themes</h2>
+                    <p>Select a visual theme to change the color palette and typography across the entire website.</p>
+                </div>
+            </div>
+            <div id="themes-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 1rem;">
+                <!-- Themes loaded dynamically -->
+            </div>
+        </section>
+
+        <!-- SETTINGS TAB -->
+        <section id="tab-settings" class="tab-content">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <h2>Account Settings</h2>
+                    <p>Update your system administrative password.</p>
+                </div>
+            </div>
+            <div style="max-width: 500px; background: rgba(18, 18, 18, 0.4); border: 1px solid #151515; padding: 2.5rem; border-radius: 6px;">
+                <div id="settingsBox" class="error-msg" style="margin-bottom: 1.5rem; border-left-color: #81c784; color: #81c784;">Password changed successfully</div>
+                <div id="settingsErrorBox" class="error-msg" style="margin-bottom: 1.5rem;">Incorrect password</div>
+                <form id="changePasswordForm">
+                    <div class="form-group">
+                        <label for="oldPassword">Old Password</label>
+                        <input type="password" id="oldPassword" class="form-control" required autocomplete="current-password">
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" class="form-control" required autocomplete="new-password">
+                    </div>
+                    <button type="submit" class="btn btn-outline" style="width: 100%; border-color: var(--color-accent);">Change Password</button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL: ADD/EDIT BLOG -->
+    <div id="blogModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeBlogModal()">&times;</span>
+            <h3 class="modal-title" id="blog-modal-title">Add New Blog Post</h3>
+            <form id="blogForm">
+                <input type="hidden" id="blog-edit-id">
+                <div class="form-group">
+                    <label for="blog-title">Post Title</label>
+                    <input type="text" id="blog-title" class="form-control" required>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label for="blog-category">Category</label>
+                        <input type="text" id="blog-category" class="form-control" placeholder="e.g. BEHIND THE SCENES" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="blog-date">Date (Optional)</label>
+                        <input type="text" id="blog-date" class="form-control" placeholder="e.g. OCT 24, 2026">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Cover Media (Photo or Video)</label>
+                    <div style="display: flex; gap: 1.5rem; align-items: center; margin-top: 0.5rem;">
+                        <div id="blog-preview-container" style="width: 120px; height: 75px; border: 1px solid var(--border-color); border-radius: var(--border-radius); background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <img id="blog-image-preview" src="" alt="Blog Preview" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                            <video id="blog-video-preview" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;" autoplay loop muted playsinline></video>
+                            <span id="blog-preview-placeholder" style="color: var(--color-text-muted); font-size: 0.75rem;">No Media</span>
+                        </div>
+                        <div style="flex: 1;">
+                            <input type="text" id="blog-image" class="form-control" readonly style="margin-bottom: 0.5rem; background: rgba(255,255,255,0.02); cursor: not-allowed;" placeholder="No media uploaded">
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('blog-image-file').click()">Upload Media</button>
+                                <button type="button" class="btn btn-outline btn-sm" style="border-color: var(--color-error, #d32f2f); color: var(--color-error, #d32f2f);" onclick="clearMediaUpload('blog-image', 'blog-image-preview', 'blog-video-preview', 'blog-preview-placeholder')">Remove</button>
+                            </div>
+                            <input type="file" id="blog-image-file" accept="image/*,video/*" style="display: none;" onchange="handleAdminFileChange(this, 'blog', 'blog-image', 'blog-image-preview', 'blog-video-preview', 'blog-preview-placeholder')">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Gallery Media (Select multiple videos or photos)</label>
+                    <div style="margin-top: 0.5rem;">
+                        <input type="text" id="blog-gallery" class="form-control" readonly style="margin-bottom: 0.5rem; background: rgba(255,255,255,0.02); cursor: not-allowed;" placeholder="No gallery media uploaded">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('blog-gallery-files').click()">Add to Gallery</button>
+                        <input type="file" id="blog-gallery-files" accept="image/*,video/*" multiple style="display: none;" onchange="handleAdminGalleryChange(this, 'blog-gallery')">
+                    </div>
+                    <div id="blog-gallery-preview-container" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;"></div>
+                </div>
+                <div class="form-group">
+                    <label for="blog-excerpt">Excerpt Description (Max 250 characters)</label>
+                    <textarea id="blog-excerpt" class="form-control" placeholder="Enter short excerpt..." maxlength="250" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="blog-content">Article Content</label>
+                    <textarea id="blog-content" class="form-control" placeholder="Article body here..." style="min-height: 200px;" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-outline" style="border-color: var(--color-accent); width: 100%;">Save Blog Post</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD/EDIT FILM -->
+    <div id="filmModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeFilmModal()">&times;</span>
+            <h3 class="modal-title" id="film-modal-title">Add New Film</h3>
+            <form id="filmForm">
+                <input type="hidden" id="film-edit-id">
+                <div class="form-group">
+                    <label for="film-title">Film Title</label>
+                    <input type="text" id="film-title" class="form-control" required>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label for="film-duration">Duration</label>
+                        <input type="text" id="film-duration" class="form-control" placeholder="e.g. 12m" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="film-location">Location</label>
+                        <input type="text" id="film-location" class="form-control" placeholder="e.g. Western India" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Video File</label>
+                    <div style="display: flex; gap: 1.5rem; align-items: center; margin-top: 0.5rem;">
+                        <div id="film-video-preview-container" style="width: 120px; height: 75px; border: 1px solid var(--border-color); border-radius: var(--border-radius); background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <video id="film-video-preview" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;" autoplay loop muted playsinline></video>
+                            <span id="film-video-placeholder" style="color: var(--color-text-muted); font-size: 0.75rem;">No Video</span>
+                        </div>
+                        <div style="flex: 1;">
+                            <input type="text" id="film-videourl" class="form-control" readonly style="margin-bottom: 0.5rem; background: rgba(255,255,255,0.02); cursor: not-allowed;" placeholder="No video uploaded">
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('film-video-file').click()">Upload Video</button>
+                                <button type="button" class="btn btn-outline btn-sm" style="border-color: var(--color-error, #d32f2f); color: var(--color-error, #d32f2f);" onclick="clearMediaUpload('film-videourl', null, 'film-video-preview', 'film-video-placeholder')">Remove</button>
+                            </div>
+                            <input type="file" id="film-video-file" accept="video/*" style="display: none;" onchange="handleAdminFileChange(this, 'film_video', 'film-videourl', null, 'film-video-preview', 'film-video-placeholder')">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Gallery Media (Select multiple videos or photos)</label>
+                    <div style="margin-top: 0.5rem;">
+                        <input type="text" id="film-gallery" class="form-control" readonly style="margin-bottom: 0.5rem; background: rgba(255,255,255,0.02); cursor: not-allowed;" placeholder="No gallery media selected">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('film-gallery-files').click()">Upload Multiple Files</button>
+                        <input type="file" id="film-gallery-files" accept="image/*,video/*" multiple style="display: none;" onchange="handleAdminGalleryChange(this, 'film-gallery')">
+                        <div id="film-gallery-preview-container" style="display: flex; gap: 0.5rem; margin-top: 1rem; overflow-x: auto; padding-bottom: 0.5rem;">
+                            <!-- Gallery previews will go here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="film-description">Short Description</label>
+                    <textarea id="film-description" class="form-control" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-outline" style="border-color: var(--color-accent); width: 100%;">Save Film</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD/EDIT STORY -->
+    <div id="storyModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeStoryModal()">&times;</span>
+            <h3 class="modal-title" id="story-modal-title">Add New Story Essay</h3>
+            <form id="storyForm">
+                <input type="hidden" id="story-edit-mode" value="add">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label for="story-id">Story Slug / Unique ID</label>
+                        <input type="text" id="story-id" class="form-control" placeholder="e.g. life-along-backwaters" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="story-category">Category</label>
+                        <input type="text" id="story-category" class="form-control" placeholder="e.g. PHOTO ESSAY" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="story-title">Story Title</label>
+                    <input type="text" id="story-title" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="story-subtitle">Subtitle</label>
+                    <input type="text" id="story-subtitle" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Main Featured Image (Photo only)</label>
+                    <div style="display: flex; gap: 1.5rem; align-items: center; margin-top: 0.5rem;">
+                        <div id="story-image-preview-container" style="width: 120px; height: 75px; border: 1px solid var(--border-color); border-radius: var(--border-radius); background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <img id="story-image-preview" src="" alt="Story Preview" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                            <span id="story-preview-placeholder" style="color: var(--color-text-muted); font-size: 0.75rem;">No Image</span>
+                        </div>
+                        <div style="flex: 1;">
+                            <input type="text" id="story-mainimage" class="form-control" readonly style="margin-bottom: 0.5rem; background: rgba(255,255,255,0.02); cursor: not-allowed;" placeholder="No image uploaded">
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('story-image-file').click()">Upload Image</button>
+                                <button type="button" class="btn btn-outline btn-sm" style="border-color: var(--color-error, #d32f2f); color: var(--color-error, #d32f2f);" onclick="clearMediaUpload('story-mainimage', 'story-image-preview', null, 'story-preview-placeholder')">Remove</button>
+                            </div>
+                            <input type="file" id="story-image-file" accept="image/*" style="display: none;" onchange="handleAdminFileChange(this, 'story', 'story-mainimage', 'story-image-preview', null, 'story-preview-placeholder')">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Gallery Images (Select multiple photos)</label>
+                    <div style="margin-top: 0.5rem;">
+                        <input type="text" id="story-gallery" class="form-control" readonly style="margin-bottom: 0.5rem; background: rgba(255,255,255,0.02); cursor: not-allowed;" placeholder="No gallery images selected">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('story-gallery-files').click()">Upload Multiple Photos</button>
+                        <input type="file" id="story-gallery-files" accept="image/*" multiple style="display: none;" onchange="handleAdminGalleryChange(this, 'story-gallery')">
+                        <div id="story-gallery-preview-container" style="display: flex; gap: 0.5rem; margin-top: 1rem; overflow-x: auto; padding-bottom: 0.5rem;">
+                            <!-- Gallery previews will go here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="story-description">Full Essay Narrative Content (Text paragraphs)</label>
+                    <textarea id="story-description" class="form-control" style="min-height: 180px;" required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-outline" style="border-color: var(--color-accent); width: 100%;">Save Story Essay</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Client Script -->
+    <!-- MODAL: DELETE MEDIA -->
+    <div id="deleteMediaModal" class="modal">
+        <div class="modal-content" style="max-width: 500px; text-align: center;">
+            <span class="modal-close" onclick="closeDeleteMediaModal()">&times;</span>
+            <h3 class="modal-title" style="border: none; margin-bottom: 1rem;">Delete Media</h3>
+            <p style="color: #ccc; margin-bottom: 2rem;">Are you sure you want to delete this file from the website? This action cannot be undone and may cause missing images if currently used.</p>
+            <div id="delete-media-preview-container" style="margin-bottom: 2rem;">
+                <img id="delete-media-preview-img" src="" style="max-width: 100%; max-height: 200px; border-radius: var(--border-radius); display: none;">
+                <video id="delete-media-preview-vid" src="" style="max-width: 100%; max-height: 200px; border-radius: var(--border-radius); display: none;" controls></video>
+            </div>
+            <input type="hidden" id="delete-media-filename">
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button class="btn btn-outline" style="border-color: #333; color: #fff;" onclick="closeDeleteMediaModal()">Cancel</button>
+                <button class="btn btn-outline" style="border-color: #e57373; color: #e57373;" onclick="confirmDeleteMedia()">Delete File</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="admin.js"></script>
+</body>
+</html>

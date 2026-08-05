@@ -1,0 +1,19 @@
+{
+  "name": "deyone_portfolio",
+  "version": "1.0.0",
+  "description": "Dynamic Photojournalist Portfolio with Admin Dashboard",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "dev:full": "node --watch server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.19.2",
+    "puppeteer": "^25.5.0"
+  },
+  "type": "commonjs",
+  "private": true
+}

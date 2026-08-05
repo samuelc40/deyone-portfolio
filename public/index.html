@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dion Dominic | Photojournalist</title>
+    <script>
+        (function() {
+            try {
+                const saved = localStorage.getItem('deyone_portfolio_theme');
+                if (saved) {
+                    const theme = JSON.parse(saved);
+                    const root = document.documentElement;
+                    for (const [key, value] of Object.entries(theme.variables)) {
+                        root.style.setProperty(key, value);
+                    }
+                    root.className = 'theme-' + theme.id;
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <meta name="description" content="Portfolio of Dion Dominic, a photojournalist capturing real stories honestly.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=24">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <h1>DION DOMINIC</h1>
+            <span>PHOTOJOURNALIST</span>
+        </div>
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle Menu">
+            <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <nav class="nav">
+            <a href="#stories">STORIES</a>
+            <a href="#films">FILMS</a>
+            <a href="#about">ABOUT</a>
+            <a href="#services">SERVICES</a>
+            <a href="#blog">BLOG</a>
+            <a href="#contact">CONTACT</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" id="home">
+            <div class="hero-bg" id="hero-bg"></div>
+            <div class="hero-content fade-in">
+                <span class="eyebrow" id="hero-eyebrow">CAPTURING REAL STORIES. HONESTLY.</span>
+                <h2 class="hero-title" id="hero-title">Every Frame<br>Has a Story</h2>
+                <p class="hero-desc" id="hero-desc">Photojournalism and documentary films<br>from the streets and spaces that<br>shape our world.</p>
+                <div class="hero-actions">
+                    <a href="#stories" class="btn btn-outline">VIEW STORIES</a>
+                    <a href="#films" class="btn btn-text">WATCH FILMS <span class="play-icon">▶</span></a>
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <span>SCROLL</span>
+                <div class="line"></div>
+            </div>
+        </section>
+
+        <section class="featured-story" id="stories">
+            <div class="featured-content fade-in-up" id="home-story-info">
+                <span class="eyebrow" id="stories-intro-eyebrow">PHOTO ESSAYS</span>
+                <h3 class="section-title" id="stories-intro-title">Visual Narratives</h3>
+                <p class="section-desc" id="stories-intro-description">Explore a collection of photo essays and visual narratives documenting unique moments and perspectives.</p>
+                <a href="stories.html" class="link-arrow">VIEW ALL STORIES <span>&rarr;</span></a>
+            </div>
+            <div class="featured-grid fade-in-up" id="home-story-grid">
+                <!-- JS will populate stories here -->
+            </div>
+        </section>
+
+
+        <!-- FILMS SECTION -->
+        <section class="featured-story reverse" id="films">
+            <div class="featured-content fade-in-up" id="home-films-info">
+                <span class="eyebrow" id="films-intro-eyebrow">DOCUMENTARY</span>
+                <h3 class="section-title" id="films-intro-title">Cinematic Explorations</h3>
+                <p class="section-desc" id="films-intro-description">Award-winning short films that dive deep into the cultural heartbeats of remote communities.</p>
+                <a href="films.html" class="link-arrow">VIEW ALL FILMS <span>&rarr;</span></a>
+            </div>
+            <div class="featured-grid fade-in-up" id="home-films-grid">
+                <!-- JS will populate films here -->
+            </div>
+        </section>
+
+        <!-- ABOUT SECTION -->
+        <section class="about-section" id="about">
+            <div class="about-image fade-in-up">
+                <div class="image-wrapper">
+                    <img alt="Dion Dominic Portrait" id="about-image">
+                </div>
+            </div>
+            <div class="about-content fade-in-up">
+                <span class="eyebrow" id="about-eyebrow">ABOUT THE ARTIST</span>
+                <h3 class="section-title" id="about-title" style="margin-bottom: 2rem;">Dion Dominic</h3>
+                <p class="section-desc" id="about-desc1" style="font-size: 1.1rem;">I am a photojournalist and documentary filmmaker dedicated to capturing raw, unfiltered human experiences. For over a decade, I have traveled to the margins of society to document stories that challenge our perspectives and unite our shared humanity.</p>
+                <p class="section-desc" id="about-desc2">My work has been featured in leading editorial publications globally, focusing on environmental change, cultural preservation, and resilience.</p>
+            </div>
+        </section>
+
+        <!-- SERVICES SECTION -->
+        <section class="services-section" id="services">
+            <div class="stories-header fade-in-up" style="text-align: center; margin-bottom: 4rem;">
+                <span class="eyebrow" id="services-eyebrow" style="color: var(--color-accent);">WHAT I DO</span>
+                <h3 class="section-title" id="services-title">Services & Expertise</h3>
+            </div>
+            <div class="services-grid fade-in-up">
+                <div style="border-top: 1px solid #333; padding-top: 2rem;">
+                    <h4 id="services-1-title" style="font-family: var(--font-heading); color: #fff; font-size: 1.5rem; margin-bottom: 1rem;">Editorial Photography</h4>
+                    <p id="services-1-desc" style="color: var(--color-text-muted); line-height: 1.6; font-size: 0.95rem;">High-impact imagery for magazines, news outlets, and digital publications. Focusing on narrative depth and visual storytelling.</p>
+                </div>
+                <div style="border-top: 1px solid #333; padding-top: 2rem;">
+                    <h4 id="services-2-title" style="font-family: var(--font-heading); color: #fff; font-size: 1.5rem; margin-bottom: 1rem;">Documentary Films</h4>
+                    <p id="services-2-desc" style="color: var(--color-text-muted); line-height: 1.6; font-size: 0.95rem;">Full-scale video production for short and feature-length documentaries, capturing cinematic visuals with authentic audio.</p>
+                </div>
+                <div style="border-top: 1px solid #333; padding-top: 2rem;">
+                    <h4 id="services-3-title" style="font-family: var(--font-heading); color: #fff; font-size: 1.5rem; margin-bottom: 1rem;">Commercial Campaigns</h4>
+                    <p id="services-3-desc" style="color: var(--color-text-muted); line-height: 1.6; font-size: 0.95rem;">Bringing a photojournalistic, raw aesthetic to brand campaigns and commercial projects that demand authenticity.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- BLOG SECTION -->
+        <section class="blog-section" id="blog">
+            <div class="stories-header fade-in-up" style="text-align: center; margin-bottom: 4rem;">
+                <span class="eyebrow" style="color: var(--color-accent);">LATEST UPDATES</span>
+                <h3 class="section-title">Field Notes</h3>
+            </div>
+            <div class="blog-list fade-in-up" id="home-blog-list" style="max-width: 800px; margin: 0 auto;">
+                <!-- JS will populate blogs here -->
+            </div>
+            
+            <div style="text-align: center; margin-top: 4rem;" class="fade-in-up">
+                <a href="blog.html" class="btn btn-outline" style="display: inline-block;">SEE ALL</a>
+            </div>
+        </section>
+
+        <!-- CONTACT SECTION -->
+        <section class="contact-section" id="contact">
+            <div class="contact-container fade-in-up">
+                <div class="contact-left">
+                    <div>
+                        <h2 id="contact-title">Let's Tell a Story</h2>
+                        <p id="contact-description">Available for assignments worldwide. For print sales, licensing, or commissions, please get in touch.</p>
+                        <a href="mailto:hello@diondominic.com" class="contact-email" id="contact-email-link" style="margin-bottom: 2rem; display: inline-block;">hello@diondominic.com</a>
+                        
+                        <form id="contactForm" class="contact-form">
+                            <div class="form-row">
+                                <input type="text" id="contact-name" placeholder="Name" required style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 0.8rem; font-family: var(--font-body); font-size: 0.85rem; border-radius: 4px; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--color-accent)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+                                <input type="email" id="contact-email" placeholder="Email" required style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 0.8rem; font-family: var(--font-body); font-size: 0.85rem; border-radius: 4px; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--color-accent)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+                            </div>
+                            <input type="text" id="contact-subject" placeholder="Subject" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 0.8rem; font-family: var(--font-body); font-size: 0.85rem; border-radius: 4px; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--color-accent)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+                            <textarea id="contact-message" placeholder="Your message..." required style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 0.8rem; font-family: var(--font-body); font-size: 0.85rem; border-radius: 4px; outline: none; min-height: 100px; resize: vertical; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--color-accent)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'"></textarea>
+                            <button type="submit" class="btn btn-outline" style="align-self: flex-start; padding: 0.8rem 2rem; border-color: var(--color-accent); font-size: 0.7rem; letter-spacing: 2px;">Send Message</button>
+                            <div id="contact-status" style="font-size: 0.85rem; display: none; margin-top: 0.5rem; border-left: 2px solid; padding-left: 0.8rem;"></div>
+                        </form>
+                    </div>
+                    <div class="contact-footer-left" style="margin-top: 4rem;">
+                        <div class="contact-social-links">
+                            <a href="#" id="contact-social-instagram-link" target="_blank">INSTAGRAM</a>
+                            <a href="#" id="contact-social-twitter-link" target="_blank">TWITTER</a>
+                            <a href="#" id="contact-social-facebook-link" target="_blank">FACEBOOK</a>
+                            <a href="#" id="contact-social-linkedin-link" target="_blank">LINKEDIN</a>
+                        </div>
+                        <p style="margin-top: 1.5rem; color: #555; font-size: 0.75rem; letter-spacing: 1px;">&copy; <span id="current-year">2026</span> DION DOMINIC. ALL RIGHTS RESERVED.</p>
+                    </div>
+                </div>
+                
+                <div class="contact-right">
+                    <div class="contact-info-block">
+                        <h4>Contact Details</h4>
+                        <ul>
+                            <li><strong>Location:</strong> <span id="contact-location-text">London, UK &amp; Worldwide</span></li>
+                            <li><strong>Phone:</strong> <span id="contact-phone-text">+44 (0) 20 7946 0192</span></li>
+                            <li><strong>Syndication:</strong> <span id="contact-syndication-text">contact@syndicate-agency.com</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="contact-info-block" style="margin-top: 3rem;">
+                        <h4>Professional Profile</h4>
+                        <p id="contact-profile-text" style="color: var(--color-text-muted); line-height: 1.6; font-size: 0.95rem;">
+                            Dion Dominic is a member of the Association of Photojournalists. Over the last decade, his lens has captured stories of environmental resilience and human perseverance across five continents.
+                        </p>
+                        <p style="margin-top: 1rem; color: var(--color-text-muted); font-size: 0.95rem;">
+                            <strong>Selected Press &amp; Clients:</strong> The New York Times, National Geographic, TIME Magazine, The Guardian, BBC.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js?v=22"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+{
+    "hero": {
+        "eyebrow": "CAPTURING REAL STORIES. HONESTLY.",
+        "title": "Every Frame\nHas a Story",
+        "description": "Photojournalism and documentary films\nfrom the streets and spaces that\nshape our world.",
+        "image": "uploaded_hero_1785932052804.jpeg"
+    },
+    "about": {
+        "eyebrow": "ABOUT THE ARTIST",
+        "title": "Dion Dominic",
+        "description1": "I am a photojournalist and documentary filmmaker dedicated to capturing raw, unfiltered human experiences. For over a decade, I have traveled to the margins of society to document stories that challenge our perspectives and unite our shared humanity.",
+        "description2": "My work has been featured in leading editorial publications globally, focusing on environmental change, cultural preservation, and resilience.",
+        "image": "uploaded_about_1785932060434.jpeg"
+    },
+    "storiesIntro": {
+        "eyebrow": "PHOTO ESSAYS",
+        "title": "Visual Narratives",
+        "description": "Explore a collection of photo essays and visual narratives documenting unique moments and perspectives."
+    },
+    "filmsIntro": {
+        "eyebrow": "DOCUMENTARY",
+        "title": "Cinematic Explorations",
+        "description": "Award-winning short films that dive deep into the cultural heartbeats of remote communities."
+    },
+    "services": {
+        "eyebrow": "WHAT I DO",
+        "title": "Services & Expertise",
+        "service1Title": "Editorial Photography",
+        "service1Desc": "High-impact imagery for magazines, news outlets, and digital publications. Focusing on narrative depth and visual storytelling.",
+        "service2Title": "Documentary Films",
+        "service2Desc": "Full-scale video production for short and feature-length documentaries, capturing cinematic visuals with authentic audio.",
+        "service3Title": "Commercial Campaigns",
+        "service3Desc": "Bringing a photojournalistic, raw aesthetic to brand campaigns and commercial projects that demand authenticity."
+    },
+    "contact": {
+        "eyebrow": "LATEST UPDATES",
+        "title": "Let's Tell a Story",
+        "description": "Available for assignments worldwide. For print sales, licensing, or commissions, please get in touch.",
+        "email": "hello@diondominic.com",
+        "phone": "+44 (0) 20 7946 0192",
+        "location": "London, UK & Worldwide",
+        "syndication": "contact@syndicate-agency.com",
+        "profile": "Dion Dominic is a member of the Association of Photojournalists. Over the last decade, his lens has captured stories of environmental resilience and human perseverance across five continents.",
+        "socialInstagram": "#",
+        "socialTwitter": "#",
+        "socialFacebook": "#",
+        "socialLinkedin": "#"
+    }
+}
