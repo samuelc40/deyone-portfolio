@@ -1,210 +1,20 @@
+require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
 const DATA_DIR = path.join(__dirname, 'data');
+const useMongo = !!process.env.MONGODB_URI;
 
-// Helper to ensure files and directories exist
-function initDB() {
+// Initialise DB directory
+try {
     if (!fs.existsSync(DATA_DIR)) {
         fs.mkdirSync(DATA_DIR);
     }
-
-    const files = {
-        'users.json': () => {
-            // Default user: shutterbug / m9803fdss@@#08
-            const salt = bcrypt.genSaltSync(10);
-            const hashedPassword = bcrypt.hashSync('m9803fdss@@#08', salt);
-            return [{ id: '1', username: 'shutterbug', password: hashedPassword }];
-        },
-        'stories.json': () => [
-            {
-                id: 'life-along-backwaters',
-                title: 'Life Along the Backwaters',
-                category: 'PHOTO ESSAY',
-                subtitle: 'A visual journey through the lives of people who live, work and dream along the backwaters of Kerala.',
-                description: 'The backwaters of Kerala form an intricate network of interconnected canals, rivers, lakes, and inlets. For centuries, they have been the lifeblood of the communities that reside along their banks. This photo essay documents the daily rhythms of these communities—from the elderly fishermen mending their traditional Chinese fishing nets before dawn, to the families whose entire livelihoods depend on the gentle ebb and flow of the tide.',
-                mainImage: 'main.png',
-                gallery: [
-                    { src: 'grid1.png', alt: 'Mending nets before sunrise - Kerala Backwaters' },
-                    { src: 'grid2.png', alt: 'Serene sunset over the waters' },
-                    { src: 'main.png', alt: 'Life along the winding river canals' },
-                    { src: 'about.png', alt: 'Local communities moving along the river banks' },
-                    { src: 'film.png', alt: 'Boat passing through the misty morning fog' },
-                    { src: 'hero.png', alt: 'Deep connection between nature and the local way of life' },
-                    { src: 'grid3.png', alt: 'Wooden traditional house sitting at the edge of the canal' }
-                ]
-            }
-        ],
-        'films.json': () => [
-            {
-                id: '1',
-                title: 'The Monsoon Project',
-                duration: '12m',
-                location: 'Western India',
-                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
-                poster: 'main.png',
-                description: 'A deep visual study on the impact of torrential monsoon seasons on local fishermen and rural coastal communities, highlighting their endurance and changing ways of life.'
-            },
-            {
-                id: '2',
-                title: 'Echoes of the Coast',
-                duration: '8m',
-                location: 'Norway Coast',
-                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-                poster: 'hero.png',
-                description: 'An artistic and documentary portrait of traditional wooden boatbuilders keeping ancient Norse maritime crafts alive in the modern industrial era.'
-            },
-            {
-                id: '3',
-                title: 'Whispers of the Forest',
-                duration: '15m',
-                location: 'Western Ghats',
-                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-                poster: 'film.png',
-                description: 'A close observation of the ancient sacred groves preserved by indigenous tribes, exploring the spiritual connection between their community and the local ecology.'
-            },
-            {
-                id: '4',
-                title: 'Rhythms of the Street',
-                duration: '10m',
-                location: 'Metropolitan Tokyo',
-                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-                poster: 'about.png',
-                description: "An exploration of urban isolation and social persistence, capturing the quiet spaces and vibrant communities coexisting in Japan's major metropolitan centers."
-            }
-        ],
-        'blogs.json': () => [
-            {
-                id: 'behind-lens-monsoon',
-                title: 'Behind the lens: The Monsoon Project',
-                date: 'OCT 24, 2026',
-                category: 'BEHIND THE SCENES',
-                image: 'main.png',
-                excerpt: 'Reflections on shooting in extreme tropical rainfall along the coast of Kerala, capturing the resilience of local backwater communities, and keeping gear functioning in 98% humidity.',
-                content: `
-                    <p>The monsoon season along the southwestern coast of India is not just a weather pattern; it is a life-altering force that dictates every facet of existence. When we set out to capture "Life Along the Backwaters" during the monsoon, we knew the physical obstacles would be immense, but we did not fully anticipate the profound human stories that would unfold in the rain.</p>
-                    <p>For three weeks, we lived among the fishing families of Alappuzha. Each morning began at 4:00 AM, in absolute darkness, under torrential downpours that felt like a solid sheet of water. The fishermen, wrapped in simple plastic sheets or traditional woven leaf garments, launched their wooden canoes into waters that had swollen beyond their natural boundaries.</p>
-                    <blockquote>"The water gives us life, and the water takes it away. The monsoon is when we feel both truths most deeply."</blockquote>
-                    <p>Photographing in these conditions is a constant battle against moisture. Despite weather-sealed camera bodies, water creeps into every seam. We utilized a combination of specialized dry bags, custom plastic wraps, and a relentless rotation of silica gel packs. Lenses were dried every few minutes, and changing a lens was an operation planned with military precision to prevent moisture from entering the sensor chamber.</p>
-                    <p>But the technical challenges fade compared to the narratives. Our focus shifted from the landscape to the faces. The lines etched by decades of ocean spray and heavy rain tell a story of resilience that no text description can match. It is a testament to the human spirit's capacity to adjust, persist, and find quiet beauty amidst the storm.</p>
-                    <p>As the project comes to a close, we hope these images convey not just the wetness of the rain, but the warmth of the hearth fire inside the wooden homes by the canal edges, and the deep, enduring dignity of the backwater community.</p>
-                `
-            },
-            {
-                id: 'exhibition-london',
-                title: 'Exhibition opening in London',
-                date: 'SEP 12, 2026',
-                category: 'EXHIBITIONS',
-                image: 'about.png',
-                excerpt: 'A look into the curation process and opening night of "Silent Waters" at the London Fine Art Gallery, presenting ten years of documentary work in single frames.',
-                content: `
-                    <p>After months of preparation, curation, and printing, "Silent Waters" has officially opened at the London Fine Art Gallery. Presenting a decade of work in a single space is both an exhilarating and humbling experience. It forces you to look back at the thread that connects your very first documentary assignments with your current perspective.</p>
-                    <p>The curation team spent weeks narrowing down a collection of over 10,000 frames to a cohesive set of 30 physical prints. We wanted the space to evoke the silence and mist of the waterways, allowing visitors to experience the slow passage of time captured in the photographs.</p>
-                    <blockquote>"A photograph is a silent pause in a loud world. In this gallery, we wanted that silence to be heavy, real, and immersive."</blockquote>
-                    <p>We selected traditional silver-gelatin printing on heavy baryta fiber paper to bring out the deepest tones of the black and white prints, and high-fidelity Giclée printing on archival matte cotton paper for the color works. Every lighting element in the gallery was adjusted to highlight the micro-details of the print textures without producing glare on the custom anti-reflective glass frames.</p>
-                    <p>Opening night brought a wonderful mix of colleagues, photojournalism students, and art collectors. Hearing the discussions, interpretations, and immediate emotional responses to the work was deeply rewarding. For a photographer accustomed to seeing their work printed in fast-moving editorial publications or glowing on mobile screens, seeing physical prints framed on a wall is a reminder of the enduring nature of printed imagery.</p>
-                    <p>The exhibition will run until November 15th, 2026. If you find yourself in London, please drop in. We hope the work gives you a quiet space to reflect on the stories behind the frames.</p>
-                `
-            },
-            {
-                id: 'ethics-documentary',
-                title: 'The Ethics of Documentary Photography',
-                date: 'AUG 05, 2026',
-                category: 'PHOTO ETHICS',
-                image: 'hero.png',
-                excerpt: "An essay discussing the boundary between observation and intrusion, and the profound responsibility photojournalists bear when telling other people's stories.",
-                content: `
-                    <p>Documentary photography exists at the intersection of journalism, fine art, and human observation. It is a powerful tool for visual storytelling that can sway public opinion, generate aid, and document historic change. However, it also presents complex ethical questions that every photojournalist must navigate daily.</p>
-                    <p>When entering a vulnerable community or a conflict zone with a camera, the power dynamic is instantly skewed. As photographers, we hold the lens, choose the framing, select the exposure, and decide which moments are shared and which are forgotten. With this power comes a profound ethical responsibility to maintain the dignity and truth of our subjects.</p>
-                    <blockquote>"The camera is a passport into people's lives, but it is not a permit to exploit them. Trust is the most important element of any lens kit."</blockquote>
-                    <p>One of the primary guidelines we follow is the principle of informed representation. It is not always possible to obtain formal consent in fast-moving editorial situations, but we strive to establish a connection with the people we document. This means explaining what the project is about, where the images will be published, and ensuring that our presence does not place anyone in danger or compromise their safety.</p>
-                    <p>Furthermore, the digital era has introduced new challenges regarding truth in image processing. In documentary work and photojournalism, we strictly adhere to standard editorial guidelines: no adding or removing objects, no altering colors to distort the reality of the scene, and no stage-directing interactions to create false drama. The image must remain a faithful record of what occurred in front of the lens.</p>
-                    <p>As we continue to tell stories, we must constantly question our motives, our perspective, and our impact. Ethical photojournalism is not about taking pictures; it is about listening to our subjects and translating their stories with truth, humility, and deep respect.</p>
-                `
-            },
-            {
-                id: 'gear-remote-assignments',
-                title: 'Gear and Setup for Remote Assignments',
-                date: 'JUL 18, 2026',
-                category: 'GEAR & SETUP',
-                image: 'film.png',
-                excerpt: 'A comprehensive breakdown of the minimalist gear kit I pack for month-long remote documentary assignments, where space is tight and reliability is everything.',
-                content: `
-                    <p>When preparing for a month-long documentary assignment in a remote location where power is scarce and public transport is unpredictable, every ounce of weight in your backpack counts. Over a decade of field experience has taught me that packing less is always better than packing more. A light load means mobility, speed, and less fatigue on long field treks.</p>
-                    <p>Our gear philosophy centers around simplicity and redundancy. I carry two identical camera bodies, so that in the event of a critical body failure, I can keep shooting without altering my muscle memory or workflow. My primary lenses are two fast, weather-sealed primes (35mm and 50mm) and a single versatile zoom for wide-angle environments.</p>
-                    <blockquote>"The best gear is the gear you forget you're holding. It should become a seamless extension of your hand and eye."</blockquote>
-                    <p>Power management is another critical factor. We carry four high-capacity batteries per camera body, along with a dual USB-C charger that can run off portable solar panels or a high-capacity power bank. A rugged, waterproof memory card wallet holds our archival-grade high-speed cards, which are backed up every night onto two separate rugged SSD drives stored in different compartments of our backpack.</p>
-                    <p>Equally important is safety and support gear: a compact first-aid kit, a lightweight multi-tool, high-durability gaffer tape, lens cleaning materials, and a lightweight carbon-fiber travel tripod that fits inside our main backpack. Carrying this minimalist setup ensures that we remain discreet, blend in with the surroundings, and can react instantly to spontaneous moments.</p>
-                    <p>Ultimately, gear is just a tool. The most expensive camera setup will not create a meaningful story if you do not have the patience to sit, look, and listen to the world around you. Pack light, plan ahead, and let the story guide your frame.</p>
-                `
-            }
-        ],
-        'contacts.json': () => [],
-        'theme.json': () => ({ activeTheme: 'classic-copper' }),
-        'home.json': () => ({
-            hero: {
-                eyebrow: "CAPTURING REAL STORIES. HONESTLY.",
-                title: "Every Frame\nHas a Story",
-                description: "Photojournalism and documentary films\nfrom the streets and spaces that\nshape our world.",
-                image: "hero.png"
-            },
-            about: {
-                eyebrow: "ABOUT THE ARTIST",
-                title: "Dion Dominic",
-                description1: "I am a photojournalist and documentary filmmaker dedicated to capturing raw, unfiltered human experiences. For over a decade, I have traveled to the margins of society to document stories that challenge our perspectives and unite our shared humanity.",
-                description2: "My work has been featured in leading editorial publications globally, focusing on environmental change, cultural preservation, and resilience.",
-                image: "about.png"
-            },
-            storiesIntro: {
-                eyebrow: "PHOTO ESSAYS",
-                title: "Visual Narratives",
-                description: "Explore a collection of photo essays and visual narratives documenting unique moments and perspectives."
-            },
-            filmsIntro: {
-                eyebrow: "DOCUMENTARY",
-                title: "Cinematic Explorations",
-                description: "Award-winning short films that dive deep into the cultural heartbeats of remote communities."
-            },
-            services: {
-                eyebrow: "WHAT I DO",
-                title: "Services & Expertise",
-                service1Title: "Editorial Photography",
-                service1Desc: "High-impact imagery for magazines, news outlets, and digital publications. Focusing on narrative depth and visual storytelling.",
-                service2Title: "Documentary Films",
-                service2Desc: "Full-scale video production for short and feature-length documentaries, capturing cinematic visuals with authentic audio.",
-                service3Title: "Commercial Campaigns",
-                service3Desc: "Bringing a photojournalistic, raw aesthetic to brand campaigns and commercial projects that demand authenticity."
-            },
-            contact: {
-                eyebrow: "LATEST UPDATES",
-                title: "Let's Tell a Story",
-                description: "Available for assignments worldwide. For print sales, licensing, or commissions, please get in touch.",
-                email: "hello@diondominic.com",
-                location: "London, UK & Worldwide",
-                phone: "+44 (0) 20 7946 0192",
-                syndication: "contact@syndicate-agency.com",
-                profile: "Dion Dominic is a member of the Association of Photojournalists. Over the last decade, his lens has captured stories of environmental resilience and human perseverance across five continents.",
-                socialInstagram: "#",
-                socialTwitter: "#",
-                socialFacebook: "#",
-                socialLinkedin: "#"
-            }
-        })
-    };
-
-    Object.keys(files).forEach(fileName => {
-        const filePath = path.join(DATA_DIR, fileName);
-        if (!fs.existsSync(filePath)) {
-            fs.writeFileSync(filePath, JSON.stringify(files[fileName](), null, 4));
-        }
-    });
+} catch (err) {
+    console.warn('Warning: Could not create local data directory. This is expected in read-only environments like Vercel. Please ensure MONGODB_URI is set.');
 }
 
-// Initialise DB
-initDB();
-
-// Available Themes List
 const THEMES = [
     {
         id: 'classic-copper',
@@ -276,101 +86,235 @@ const THEMES = [
     }
 ];
 
-// DB utility functions
-function readData(fileName) {
-    const filePath = path.join(DATA_DIR, fileName);
-    try {
-        const raw = fs.readFileSync(filePath, 'utf8');
-        return JSON.parse(raw);
-    } catch (e) {
-        return [];
+const DEFAULT_HOME_DATA = {
+    hero: {
+        eyebrow: "CAPTURING REAL STORIES. HONESTLY.",
+        title: "Every Frame\nHas a Story",
+        description: "Photojournalism and documentary films\nfrom the streets and spaces that\nshape our world.",
+        image: "hero.png"
+    },
+    about: {
+        eyebrow: "ABOUT THE ARTIST",
+        title: "Dion Dominic",
+        description1: "I am a photojournalist and documentary filmmaker dedicated to capturing raw, unfiltered human experiences.",
+        description2: "My work has been featured in leading editorial publications globally.",
+        image: "about.png"
+    },
+    storiesIntro: {
+        eyebrow: "PHOTO ESSAYS",
+        title: "Visual Narratives",
+        description: "Explore a collection of photo essays and visual narratives documenting unique moments and perspectives."
+    },
+    filmsIntro: {
+        eyebrow: "DOCUMENTARY",
+        title: "Cinematic Explorations",
+        description: "Award-winning short films that dive deep into the cultural heartbeats of remote communities."
+    },
+    services: {
+        eyebrow: "WHAT I DO",
+        title: "Services & Expertise",
+        service1Title: "Editorial Photography",
+        service1Desc: "High-impact imagery for magazines, news outlets, and digital publications.",
+        service2Title: "Documentary Films",
+        service2Desc: "Full-scale video production for short and feature-length documentaries.",
+        service3Title: "Commercial Campaigns",
+        service3Desc: "Bringing a photojournalistic, raw aesthetic to brand campaigns."
+    },
+    contact: {
+        eyebrow: "LATEST UPDATES",
+        title: "Let's Tell a Story",
+        description: "Available for assignments worldwide.",
+        email: "hello@diondominic.com",
+        location: "London, UK & Worldwide",
+        phone: "+44 (0) 20 7946 0192",
+        syndication: "contact@syndicate-agency.com",
+        profile: "Dion Dominic is a member of the Association of Photojournalists.",
+        socialInstagram: "#",
+        socialTwitter: "#",
+        socialFacebook: "#",
+        socialLinkedin: "#"
     }
-}
-
-function writeData(fileName, data) {
-    const filePath = path.join(DATA_DIR, fileName);
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 4), 'utf8');
-}
-
-module.exports = {
-    // Auth users CRUD
-    getUsers: () => readData('users.json'),
-    saveUsers: (users) => writeData('users.json', users),
-    getUserByUsername: (username) => {
-        const users = readData('users.json');
-        return users.find(u => u.username === username);
-    },
-
-    // Stories CRUD
-    getStories: () => readData('stories.json'),
-    saveStories: (stories) => writeData('stories.json', stories),
-    getStory: (id) => {
-        const stories = readData('stories.json');
-        return stories.find(s => s.id === id);
-    },
-
-    // Films CRUD
-    getFilms: () => readData('films.json'),
-    saveFilms: (films) => writeData('films.json', films),
-    getFilm: (id) => {
-        const films = readData('films.json');
-        return films.find(f => f.id === id);
-    },
-
-    // Blogs CRUD
-    getBlogs: () => readData('blogs.json'),
-    saveBlogs: (blogs) => writeData('blogs.json', blogs),
-    getBlog: (id) => {
-        const blogs = readData('blogs.json');
-        return blogs.find(b => b.id === id);
-    },
-
-    // Contacts CRUD
-    getContacts: () => readData('contacts.json'),
-    saveContacts: (contacts) => writeData('contacts.json', contacts),
-    addContact: (contact) => {
-        const contacts = readData('contacts.json');
-        const newContact = {
-            id: Date.now().toString(),
-            date: new Date().toISOString(),
-            ...contact
-        };
-        contacts.push(newContact);
-        writeData('contacts.json', contacts);
-        return newContact;
-    },
-    deleteContact: (id) => {
-        const contacts = readData('contacts.json');
-        const filtered = contacts.filter(c => c.id !== id);
-        writeData('contacts.json', filtered);
-        return true;
-    },
-
-    // Themes CRUD
-    getThemes: () => THEMES,
-    getActiveTheme: () => {
-        const data = readData('theme.json');
-        const activeId = (data && data.activeTheme) || 'classic-copper';
-        return THEMES.find(t => t.id === activeId) || THEMES[0];
-    },
-    setActiveTheme: (themeId) => {
-        writeData('theme.json', { activeTheme: themeId });
-        return true;
-    },
-
-    // Home CRUD
-    getHomeData: () => {
-        return readData('home.json');
-    },
-    updateHomeData: (data) => {
-        writeData('home.json', data);
-        return data;
-    },
-
-    // Sessions
-    getSessions: () => {
-        const raw = readData('sessions.json');
-        return Array.isArray(raw) ? raw : [];
-    },
-    saveSessions: (sessions) => writeData('sessions.json', sessions)
 };
+
+let dbMethods = {};
+
+if (useMongo) {
+    const mongoose = require('mongoose');
+    let isConnected = false;
+    
+    async function connectDB() {
+        if (isConnected) return;
+        try {
+            await mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+            isConnected = true;
+            console.log('Connected to MongoDB');
+            await initMongoDefaults();
+        } catch (e) {
+            console.error('MongoDB connection error:', e);
+        }
+    }
+
+    const User = mongoose.models.User || mongoose.model('User', new mongoose.Schema({ username: { type: String, unique: true }, password: String }));
+    const Session = mongoose.models.Session || mongoose.model('Session', new mongoose.Schema({ token: { type: String, unique: true }, username: String, expires: Number }));
+    const Story = mongoose.models.Story || mongoose.model('Story', new mongoose.Schema({ id: { type: String, unique: true }, title: String, category: String, subtitle: String, description: String, mainImage: String, gallery: Array }));
+    const Film = mongoose.models.Film || mongoose.model('Film', new mongoose.Schema({ id: { type: String, unique: true }, title: String, duration: String, location: String, videoUrl: String, poster: String, description: String, gallery: Array }));
+    const Blog = mongoose.models.Blog || mongoose.model('Blog', new mongoose.Schema({ id: { type: String, unique: true }, title: String, date: String, category: String, image: String, excerpt: String, content: String, gallery: Array }));
+    const Contact = mongoose.models.Contact || mongoose.model('Contact', new mongoose.Schema({ id: { type: String, unique: true }, name: String, email: String, subject: String, message: String, date: String }));
+    const Theme = mongoose.models.Theme || mongoose.model('Theme', new mongoose.Schema({ activeTheme: String }));
+    const Home = mongoose.models.Home || mongoose.model('Home', new mongoose.Schema({ data: Object }));
+
+    async function initMongoDefaults() {
+        if (!(await User.findOne({ username: 'shutterbug' }))) {
+            const salt = bcrypt.genSaltSync(10);
+            await User.create({ username: 'shutterbug', password: bcrypt.hashSync('m9803fdss@@#08', salt) });
+        }
+        if (!(await Theme.findOne())) await Theme.create({ activeTheme: 'classic-copper' });
+        if (!(await Home.findOne())) await Home.create({ data: DEFAULT_HOME_DATA });
+    }
+
+    dbMethods = {
+        getUsers: async () => { await connectDB(); return await User.find().lean(); },
+        saveUsers: async (users) => { 
+            await connectDB();
+            for (const u of users) await User.updateOne({ username: u.username }, { password: u.password }, { upsert: true });
+        },
+        getUserByUsername: async (username) => { await connectDB(); return await User.findOne({ username }).lean(); },
+        
+        getStories: async () => { await connectDB(); return await Story.find().lean(); },
+        saveStories: async (stories) => { 
+            await connectDB();
+            await Story.deleteMany({});
+            if (stories.length > 0) await Story.insertMany(stories);
+        },
+        getStory: async (id) => { await connectDB(); return await Story.findOne({ id }).lean(); },
+        
+        getFilms: async () => { await connectDB(); return await Film.find().lean(); },
+        saveFilms: async (films) => { 
+            await connectDB();
+            await Film.deleteMany({});
+            if (films.length > 0) await Film.insertMany(films);
+        },
+        getFilm: async (id) => { await connectDB(); return await Film.findOne({ id }).lean(); },
+        
+        getBlogs: async () => { await connectDB(); return await Blog.find().lean(); },
+        saveBlogs: async (blogs) => { 
+            await connectDB();
+            await Blog.deleteMany({});
+            if (blogs.length > 0) await Blog.insertMany(blogs);
+        },
+        getBlog: async (id) => { await connectDB(); return await Blog.findOne({ id }).lean(); },
+        
+        getContacts: async () => { await connectDB(); return await Contact.find().lean(); },
+        saveContacts: async (contacts) => { 
+            await connectDB();
+            await Contact.deleteMany({});
+            if (contacts.length > 0) await Contact.insertMany(contacts);
+        },
+        addContact: async (contact) => { 
+            await connectDB();
+            const newContact = { id: Date.now().toString(), date: new Date().toISOString(), ...contact };
+            await Contact.create(newContact);
+            return newContact;
+        },
+        deleteContact: async (id) => { await connectDB(); await Contact.deleteOne({ id }); return true; },
+        
+        getThemes: async () => THEMES,
+        getActiveTheme: async () => { 
+            await connectDB(); 
+            const theme = await Theme.findOne().lean();
+            const activeId = theme ? theme.activeTheme : 'classic-copper';
+            return THEMES.find(t => t.id === activeId) || THEMES[0];
+        },
+        setActiveTheme: async (themeId) => { 
+            await connectDB();
+            await Theme.updateOne({}, { activeTheme: themeId }, { upsert: true });
+            return true;
+        },
+        
+        getHomeData: async () => { 
+            await connectDB();
+            const home = await Home.findOne().lean();
+            return home ? home.data : DEFAULT_HOME_DATA;
+        },
+        updateHomeData: async (data) => { 
+            await connectDB();
+            await Home.updateOne({}, { data }, { upsert: true });
+            return data;
+        },
+        
+        getSessions: async () => { await connectDB(); return await Session.find().lean(); },
+        saveSessions: async (sessions) => { 
+            await connectDB();
+            await Session.deleteMany({});
+            if (sessions.length > 0) await Session.insertMany(sessions);
+        }
+    };
+} else {
+    // Local JSON implementation
+    function readData(fileName) {
+        try { return JSON.parse(fs.readFileSync(path.join(DATA_DIR, fileName), 'utf8')); } 
+        catch (e) { return []; }
+    }
+    function writeData(fileName, data) { 
+        try {
+            fs.writeFileSync(path.join(DATA_DIR, fileName), JSON.stringify(data, null, 4), 'utf8'); 
+        } catch (err) {
+            console.warn(`Warning: Could not write to ${fileName}. This is expected in read-only environments like Vercel.`);
+        }
+    }
+
+    // Init Defaults
+    if (!fs.existsSync(path.join(DATA_DIR, 'users.json'))) {
+        const salt = bcrypt.genSaltSync(10);
+        writeData('users.json', [{ id: '1', username: 'shutterbug', password: bcrypt.hashSync('m9803fdss@@#08', salt) }]);
+    }
+    if (!fs.existsSync(path.join(DATA_DIR, 'stories.json'))) writeData('stories.json', []);
+    if (!fs.existsSync(path.join(DATA_DIR, 'films.json'))) writeData('films.json', []);
+    if (!fs.existsSync(path.join(DATA_DIR, 'blogs.json'))) writeData('blogs.json', []);
+    if (!fs.existsSync(path.join(DATA_DIR, 'contacts.json'))) writeData('contacts.json', []);
+    if (!fs.existsSync(path.join(DATA_DIR, 'sessions.json'))) writeData('sessions.json', []);
+    if (!fs.existsSync(path.join(DATA_DIR, 'theme.json'))) writeData('theme.json', { activeTheme: 'classic-copper' });
+    if (!fs.existsSync(path.join(DATA_DIR, 'home.json'))) writeData('home.json', DEFAULT_HOME_DATA);
+
+    dbMethods = {
+        getUsers: async () => readData('users.json'),
+        saveUsers: async (users) => writeData('users.json', users),
+        getUserByUsername: async (username) => readData('users.json').find(u => u.username === username),
+        getStories: async () => readData('stories.json'),
+        saveStories: async (stories) => writeData('stories.json', stories),
+        getStory: async (id) => readData('stories.json').find(s => s.id === id),
+        getFilms: async () => readData('films.json'),
+        saveFilms: async (films) => writeData('films.json', films),
+        getFilm: async (id) => readData('films.json').find(f => f.id === id),
+        getBlogs: async () => readData('blogs.json'),
+        saveBlogs: async (blogs) => writeData('blogs.json', blogs),
+        getBlog: async (id) => readData('blogs.json').find(b => b.id === id),
+        getContacts: async () => readData('contacts.json'),
+        saveContacts: async (contacts) => writeData('contacts.json', contacts),
+        addContact: async (contact) => {
+            const contacts = readData('contacts.json');
+            const newContact = { id: Date.now().toString(), date: new Date().toISOString(), ...contact };
+            contacts.push(newContact);
+            writeData('contacts.json', contacts);
+            return newContact;
+        },
+        deleteContact: async (id) => {
+            const contacts = readData('contacts.json');
+            writeData('contacts.json', contacts.filter(c => c.id !== id));
+            return true;
+        },
+        getThemes: async () => THEMES,
+        getActiveTheme: async () => {
+            const data = readData('theme.json');
+            const activeId = (data && data.activeTheme) || 'classic-copper';
+            return THEMES.find(t => t.id === activeId) || THEMES[0];
+        },
+        setActiveTheme: async (themeId) => { writeData('theme.json', { activeTheme: themeId }); return true; },
+        getHomeData: async () => { const data = readData('home.json'); return Array.isArray(data) ? DEFAULT_HOME_DATA : data; },
+        updateHomeData: async (data) => { writeData('home.json', data); return data; },
+        getSessions: async () => { const raw = readData('sessions.json'); return Array.isArray(raw) ? raw : []; },
+        saveSessions: async (sessions) => writeData('sessions.json', sessions)
+    };
+}
+
+module.exports = dbMethods;

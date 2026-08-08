@@ -123,6 +123,13 @@ function escapeHTML(str) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Handle Browser Back/Forward Cache (bfcache)
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted) {
+            checkAuth();
+        }
+    });
+
     // Fetch and sync active theme variables from backend
     fetch('/api/theme')
         .then(res => res.json())

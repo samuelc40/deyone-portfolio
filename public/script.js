@@ -22,8 +22,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     const navMenu = document.querySelector('.nav');
     if (mobileMenuBtn && navMenu) {
+        const closeMenu = () => {
+            navMenu.classList.remove('active');
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+        };
+
         mobileMenuBtn.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
+            navMenu.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
+        });
+
+        // Add a close button dynamically
+        const closeBtn = document.createElement('button');
+        closeBtn.innerHTML = '&times;';
+        closeBtn.className = 'mobile-menu-close-btn';
+        navMenu.prepend(closeBtn);
+
+        closeBtn.addEventListener('click', closeMenu);
+
+        // Close menu when a link is clicked
+        const navLinks = navMenu.querySelectorAll('a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', closeMenu);
         });
     }
 

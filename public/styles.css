@@ -995,3 +995,88 @@ textarea:-webkit-autofill:focus {
 }
 
 
+
+
+/* === RESPONSIVE TEXT & OVERFLOW FIXES === */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6, p, span, a, div {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+video, iframe, img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Ensure video wrappers are responsive */
+.video-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.video-wrapper video, .video-wrapper iframe {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+/* Fix mobile nav overlay */
+@media (max-width: 768px) {
+    .nav.active {
+        position: fixed;
+        top: 80px;
+        left: 0;
+        width: 100%;
+        height: calc(100vh - 80px);
+        background: rgba(15, 15, 15, 0.6);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        z-index: 1000;
+        padding: 2rem;
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: auto;
+    }
+}
+
+
+/* === RESPONSIVE GALLERY FIXES === */
+@media (max-width: 768px) {
+    .film-gallery, .gallery-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .film-gallery img, .film-gallery video, .gallery-grid img {
+        height: auto !important;
+        grid-column: 1 !important;
+        aspect-ratio: 4/3;
+    }
+}
+
+
+/* Mobile menu close button */
+.mobile-menu-close-btn {
+    display: none;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 3rem;
+    cursor: pointer;
+    line-height: 1;
+    z-index: 1001;
+    padding: 0;
+}
+@media (max-width: 768px) {
+    .nav.active .mobile-menu-close-btn {
+        display: block;
+    }
+}
