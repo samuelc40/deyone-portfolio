@@ -656,7 +656,7 @@ textarea:-webkit-autofill:focus {
 
 @media (max-width: 768px) {
     .header { padding: 1.5rem; flex-direction: row; justify-content: space-between; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
-    .mobile-menu-btn { display: block; }
+    .mobile-menu-btn { display: block; position: absolute; right: 1.5rem; top: 1.5rem; }
     .nav { 
         display: none !important; 
         flex-direction: column; 
